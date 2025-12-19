@@ -1,21 +1,21 @@
+import { initializeApp } from "firebase/app";
+import { getAuth } from "firebase/auth";
+import { getFirestore } from "firebase/firestore";
 
-/**
- * Note: Real Firebase keys should be handled via environment variables.
- * For this implementation, we simulate the storage with a LocalStorage-based fallback 
- * if process.env.API_KEY or Firebase initialization fails, ensuring the app 
- * is "Offline-first" as requested.
- */
-// Fix: Use the properly exported modular initializeApp from firebase/app
-import { initializeApp } from 'firebase/app';
-import { getFirestore, enableIndexedDbPersistence } from 'firebase/firestore';
-import { getAuth, signInAnonymously } from 'firebase/auth';
-import { getStorage } from 'firebase/storage';
-
+// 使用 Vite 的環境變數 (這樣最安全，不會有引號錯誤)
 const firebaseConfig = {
-  // Fix: Per instructions, all API keys must be obtained exclusively from process.env.API_KEY
-  apiKey: process.env.API_KEY,
-  authDomain: "travel-planner-d59ab.firebaseapp.com",
-  projectId: "travel-planner-d59ab",
-  storageBucket: "travel-planner-d59ab.firebasestorage.app",
-  messagingSenderId: "845991687518",
-  appId: "1:84
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+  appId: import.meta.env.VITE_FIREBASE_APP_ID
+};
+
+// 初始化 Firebase
+const app = initializeApp(firebaseConfig);
+
+// 導出你需要的功能
+export const auth = getAuth(app);
+export const db = getFirestore(app);
+export default app;
