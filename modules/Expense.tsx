@@ -95,7 +95,11 @@ const Expense: React.FC<{ currentUser: TripMember; members: TripMember[]; lang: 
   }, [expenses, members, rates]);
 
   const settlementSuggestions = useMemo(() => {
-    const people = Object.entries(balances).map(([id, balance]) => ({ id, balance }));
+    // Fix: Explicitly cast 'balance' from Object.entries to 'number' to avoid TypeScript inferring 'unknown' in filter/sort operations.
+    const people: Array<{ id: string; balance: number }> = Object.entries(balances).map(([id, balance]) => ({ 
+      id, 
+      balance: balance as number 
+    }));
     const debtors = people.filter(p => p.balance < -0.01).sort((a, b) => a.balance - b.balance);
     const creditors = people.filter(p => p.balance > 0.01).sort((a, b) => b.balance - a.balance);
     const transactions: Array<{ from: string; to: string; amount: number }> = [];

@@ -67,14 +67,67 @@
     .safe-bottom {
       padding-bottom: calc(1.5rem + var(--sab));
     }
-    /* 柔和動畫 */
-    .animate-float {
-      animation: float 3s ease-in-out infinite;
-    }
+    
+    /* 基礎浮動 */
     @keyframes float {
       0%, 100% { transform: translateY(0px); }
       50% { transform: translateY(-10px); }
     }
+    .animate-float {
+      animation: float 3s ease-in-out infinite;
+    }
+
+    /* --- 可愛人偶走路循環 (Walk Cycle) --- */
+    
+    /* 身體搖擺與彈跳 */
+    @keyframes character-waddle {
+      0%, 100% { transform: translateY(0) rotate(-2deg); }
+      50% { transform: translateY(-6px) rotate(2deg); }
+    }
+    .animate-waddle {
+      animation: character-waddle 1s ease-in-out infinite;
+    }
+
+    /* 手部可愛搖晃 - 左手 */
+    @keyframes cute-arm-left {
+      0%, 100% { transform: rotate(-30deg) translateY(0); }
+      50% { transform: rotate(10deg) translateY(-2px); }
+    }
+    .animate-hand-left {
+      animation: cute-arm-left 0.5s ease-in-out infinite;
+      transform-origin: top center;
+    }
+
+    /* 手部可愛搖晃 - 右手 (交替) */
+    @keyframes cute-arm-right {
+      0%, 100% { transform: rotate(10deg) translateY(-2px); }
+      50% { transform: rotate(-30deg) translateY(0); }
+    }
+    .animate-hand-right {
+      animation: cute-arm-right 0.5s ease-in-out infinite;
+      transform-origin: top center;
+    }
+
+    /* 腳部可愛踏步 - 左腳 */
+    @keyframes cute-leg-left {
+      0%, 100% { transform: translateY(0) scaleY(1); }
+      50% { transform: translateY(-4px) scaleY(0.85); }
+    }
+    .animate-foot-left {
+      animation: cute-leg-left 0.5s ease-in-out infinite;
+      transform-origin: bottom center;
+    }
+
+    /* 腳部可愛踏步 - 右腳 (交替) */
+    @keyframes cute-leg-right {
+      0%, 100% { transform: translateY(-4px) scaleY(0.85); }
+      50% { transform: translateY(0) scaleY(1); }
+    }
+    .animate-foot-right {
+      animation: cute-leg-right 0.5s ease-in-out infinite;
+      transform-origin: bottom center;
+    }
+
   </style>
 <script type="importmap">
 {
