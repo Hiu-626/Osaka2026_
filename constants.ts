@@ -1,5 +1,5 @@
 
-import { TripMember, ScheduleItem, TripConfig } from './types';
+import { TripMember, TripConfig } from './types';
 
 export const COLORS = {
   stitch: '#6EC1E4',
@@ -20,14 +20,14 @@ export const MOCK_MEMBERS: TripMember[] = [
 ];
 
 export const MOCK_TRIP_CONFIG: TripConfig = {
-  startDate: new Date(Date.now() + 86400000 * 5).toISOString().split('T')[0],
-  duration: 5,
-  tripName: 'Tokyo Adventure 2024',
-  region: 'Tokyo, Japan'
+  startDate: '2025-02-04',
+  duration: 10,
+  tripName: 'Ohana 關西之旅 2025',
+  region: '大阪 & 京都'
 };
 
 export const CURRENCY_RATES = {
   JPY: 1,
-  HKD: 19,
-  AUD: 95
+  HKD: 19.2,
+  AUD: 95.5
 };

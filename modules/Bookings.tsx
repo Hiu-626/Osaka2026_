@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { 
   Plane, 
   Hotel, 
@@ -16,11 +16,18 @@ import {
   ChevronRight,
   Sparkles,
   Calendar,
-  Image as ImageIcon
+  Image as ImageIcon,
+  Search,
+  Filter
 } from 'lucide-react';
 import { Booking } from '../types';
 
-const Bookings: React.FC = () => {
+interface BookingsProps {
+  lang: string;
+  t: any;
+}
+
+const Bookings: React.FC<BookingsProps> = ({ lang, t }) => {
   const [bookings, setBookings] = useState<Booking[]>(() => {
     const saved = localStorage.getItem('bookings');
     return saved ? JSON.parse(saved) : [
@@ -45,10 +52,24 @@ const Bookings: React.FC = () => {
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingBooking, setEditingBooking] = useState<Booking | null>(null);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState<string>('All');
+
+  const categories: string[] = ['All', 'Flight', 'Hotel', 'Car', 'Restaurant', 'Amusement', 'Ticket'];
 
   useEffect(() => {
     localStorage.setItem('bookings', JSON.stringify(bookings));
   }, [bookings]);
+
+  const filteredBookings = useMemo(() => {
+    return bookings.filter(booking => {
+      const matchesSearch = booking.title.toLowerCase().includes(searchTerm.toLowerCase()) || 
+                            (booking.details.from && booking.details.from.toLowerCase().includes(searchTerm.toLowerCase())) ||
+                            (booking.details.to && booking.details.to.toLowerCase().includes(searchTerm.toLowerCase()));
+      const matchesCategory = selectedCategory === 'All' || booking.type === selectedCategory;
+      return matchesSearch && matchesCategory;
+    });
+  }, [bookings, searchTerm, selectedCategory]);
 
   const handleDelete = (id: string) => {
     if (confirm('Delete this booking?')) {
@@ -73,7 +94,6 @@ const Bookings: React.FC = () => {
       case 'Flight':
         return (
           <div className="relative bg-navy text-white rounded-2xl-sticker overflow-hidden sticker-shadow group transition-transform active:scale-[0.98]">
-            {/* Top Bar */}
             <div className="p-4 border-b border-white/10 flex justify-between items-center bg-navy/50">
               <div className="flex items-center gap-2">
                 <Plane size={18} className="text-stitch" />
@@ -84,16 +104,12 @@ const Bookings: React.FC = () => {
                 <button onClick={() => handleDelete(booking.id)} className="p-1 opacity-40 hover:opacity-100 text-red-400"><Trash2 size={14} /></button>
               </div>
             </div>
-
-            {/* Optional Voucher Image Snapshot */}
             {hasImage && (
               <div className="w-full aspect-[21/9] overflow-hidden border-b border-white/5 relative group-hover:opacity-90">
                 <img src={booking.imageUrl} alt="Voucher" className="w-full h-full object-cover grayscale-[30%] contrast-125" />
                 <div className="absolute inset-0 bg-navy/20" />
               </div>
             )}
-
-            {/* Boarding Info */}
             <div className="p-6 flex justify-between items-center relative ticket-edge">
               <div className="text-center">
                 <p className="text-4xl font-black text-white">{booking.details.from || '---'}</p>
@@ -141,7 +157,6 @@ const Bookings: React.FC = () => {
                   <button onClick={() => handleDelete(booking.id)} className="p-2 text-navy/20 hover:text-red-400"><Trash2 size={16} /></button>
                 </div>
               </div>
-              
               <div className="grid grid-cols-2 gap-4 mt-4 py-4 border-t border-accent/30">
                 <div>
                   <p className="text-[8px] font-black opacity-30 uppercase tracking-widest mb-1">Check In</p>
@@ -152,12 +167,10 @@ const Bookings: React.FC = () => {
                   <p className="text-sm font-black text-navy">{booking.details.checkOut || '---'}</p>
                 </div>
               </div>
-
               <div className="flex items-center gap-1 text-[10px] font-bold text-navy/40 mb-2">
                 <MapPin size={12} className="text-stitch" />
                 {booking.details.address}
               </div>
-              
               {booking.cost > 0 && (
                 <div className="mt-3 pt-3 border-t border-accent/20 flex justify-end">
                    <span className="text-sm font-black text-stitch">¥{booking.cost.toLocaleString()}</span>
@@ -250,13 +263,11 @@ const Bookings: React.FC = () => {
                 <button onClick={() => { setEditingBooking(booking); setIsModalOpen(true); }} className="p-1.5 bg-white/40 rounded-full text-navy"><Edit2 size={14} /></button>
                 <button onClick={() => handleDelete(booking.id)} className="p-1.5 bg-white/40 rounded-full text-red-500"><Trash2 size={14} /></button>
             </div>
-            
             {hasImage && (
               <div className="mb-4 rounded-xl overflow-hidden border border-white/50 shadow-inner">
                 <img src={booking.imageUrl} alt="Pass" className="w-full h-24 object-cover" />
               </div>
             )}
-
             <div className="flex items-center gap-3 mb-6">
                <div className="p-3 bg-white rounded-2xl shadow-sm text-donald"><Sparkles size={24} /></div>
                <div>
@@ -264,7 +275,6 @@ const Bookings: React.FC = () => {
                   <p className="text-[10px] font-bold text-navy/40 uppercase mt-1 tracking-widest">Entry Voucher</p>
                </div>
             </div>
-            
             <div className="grid grid-cols-2 gap-4">
                <div className="bg-white/50 p-3 rounded-xl">
                   <p className="text-[8px] font-black opacity-30 uppercase mb-1">Date</p>
@@ -275,7 +285,6 @@ const Bookings: React.FC = () => {
                   <p className="text-sm font-black">{booking.details.type || '---'}</p>
                </div>
             </div>
-            
             <div className="mt-6 pt-5 border-t border-white/30 flex justify-between items-center">
                <div className="w-1/2 h-5 bg-navy/10 rounded flex items-center justify-around px-2">
                   {Array.from({length: 12}).map((_, i) => <div key={i} className="w-1 h-3 bg-navy/20 rounded-full" />)}
@@ -326,10 +335,44 @@ const Bookings: React.FC = () => {
           <Plus size={28} />
         </button>
       </div>
+
+      {/* 搜尋列與分類篩選 */}
+      <div className="space-y-4">
+        {/* 搜尋輸入框 */}
+        <div className="relative group">
+          <div className="absolute inset-y-0 left-4 flex items-center pointer-events-none">
+            <Search size={18} className="text-navy/20 group-focus-within:text-stitch transition-colors" />
+          </div>
+          <input 
+            type="text" 
+            placeholder={lang === 'zh' ? "搜尋票券、地點..." : "Search tickets, locations..."}
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="w-full pl-12 pr-4 py-4 bg-white border border-accent rounded-2xl-sticker sticker-shadow font-bold text-navy focus:ring-2 focus:ring-stitch/30 focus:outline-none transition-all placeholder:text-navy/10"
+          />
+        </div>
+
+        {/* 橫向分類列表 */}
+        <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide -mx-1 px-1">
+          {categories.map((cat) => (
+            <button
+              key={cat}
+              onClick={() => setSelectedCategory(cat)}
+              className={`flex-shrink-0 px-5 py-2.5 rounded-xl-sticker border-2 font-black text-[11px] uppercase tracking-widest transition-all ${
+                selectedCategory === cat 
+                  ? 'bg-stitch border-white text-white sticker-shadow scale-105' 
+                  : 'bg-paper border-accent/40 text-navy/30 hover:text-navy/50'
+              }`}
+            >
+              {cat === 'All' ? (lang === 'zh' ? '全部' : 'All') : cat}
+            </button>
+          ))}
+        </div>
+      </div>
       
-      {bookings.length > 0 ? (
+      {filteredBookings.length > 0 ? (
         <div className="space-y-6">
-          {bookings.map((booking) => (
+          {filteredBookings.map((booking) => (
             <div key={booking.id} className="animate-in slide-in-from-bottom-2 duration-300">
               {renderBookingCard(booking)}
             </div>
@@ -338,8 +381,12 @@ const Bookings: React.FC = () => {
       ) : (
         <div className="py-24 text-center opacity-30 flex flex-col items-center border-2 border-dashed border-accent rounded-3xl bg-paper/50">
           <TicketIcon size={56} className="mb-4 text-navy/20" />
-          <p className="font-black text-xl">Empty Pocket</p>
-          <p className="text-sm font-bold max-w-[200px] mx-auto">No travel vouchers yet. Tap the button to add your first one!</p>
+          <p className="font-black text-xl">{searchTerm || selectedCategory !== 'All' ? (lang === 'zh' ? '找不到結果' : 'No matches found') : 'Empty Pocket'}</p>
+          <p className="text-sm font-bold max-w-[200px] mx-auto">
+            {searchTerm || selectedCategory !== 'All' 
+              ? (lang === 'zh' ? '換個關鍵字或分類試試看吧！' : 'Try adjusting your search or category filter.')
+              : 'No travel vouchers yet. Tap the button to add your first one!'}
+          </p>
         </div>
       )}
 
@@ -401,7 +448,6 @@ const BookingFormModal: React.FC<{ initialData: Booking | null; onClose: () => v
       </div>
 
       <div className="flex-1 overflow-y-auto p-6 space-y-6 pb-20">
-        {/* Type Selection */}
         <div className="bg-paper p-4 rounded-2xl-sticker border border-accent sticker-shadow">
           <label className="text-[10px] font-black uppercase text-navy/40 mb-3 block">Category</label>
           <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
@@ -419,10 +465,7 @@ const BookingFormModal: React.FC<{ initialData: Booking | null; onClose: () => v
           </div>
         </div>
 
-        {/* Voucher Snapshot (Optional) */}
-        <div 
-          className="w-full aspect-[21/9] bg-white rounded-2xl-sticker sticker-shadow border-2 border-dashed border-accent flex flex-col items-center justify-center relative overflow-hidden group transition-all"
-        >
+        <div className="w-full aspect-[21/9] bg-white rounded-2xl-sticker sticker-shadow border-2 border-dashed border-accent flex flex-col items-center justify-center relative overflow-hidden group transition-all">
           {imagePreview ? (
             <div className="relative w-full h-full">
                <img src={imagePreview} alt="Preview" className="w-full h-full object-cover" />
@@ -435,7 +478,7 @@ const BookingFormModal: React.FC<{ initialData: Booking | null; onClose: () => v
             </div>
           ) : (
             <div 
-              className="flex flex-col items-center text-navy/20 w-full h-full justify-center"
+              className="flex flex-col items-center text-navy/20 w-full h-full justify-center cursor-pointer"
               onClick={() => document.getElementById('imageInput')?.click()}
             >
               <Camera size={40} className="mb-2" />
@@ -446,7 +489,6 @@ const BookingFormModal: React.FC<{ initialData: Booking | null; onClose: () => v
           <input id="imageInput" type="file" accept="image/*" onChange={handleImageUpload} className="hidden" />
         </div>
 
-        {/* Main Details */}
         <div className="bg-paper p-4 rounded-2xl-sticker border border-accent sticker-shadow space-y-4">
           <div>
             <label className="text-[10px] font-black uppercase text-navy/40 mb-1 block">Title / Name</label>
@@ -465,7 +507,6 @@ const BookingFormModal: React.FC<{ initialData: Booking | null; onClose: () => v
           </div>
         </div>
 
-        {/* Type-Specific Fields */}
         {formData.type === 'Flight' && (
           <div className="bg-paper p-4 rounded-2xl-sticker border border-accent sticker-shadow space-y-4">
              <div className="grid grid-cols-2 gap-4">

@@ -3,7 +3,8 @@ import React, { useState, useEffect } from 'react';
 import { TripMember, PlanningItem } from '../types';
 import { Plus, Trash2, Check, User, X, Users } from 'lucide-react';
 
-const Planning: React.FC<{ members: TripMember[] }> = ({ members }) => {
+// Fix: Add lang and t props to Planning component signature to satisfy App.tsx type requirements
+const Planning: React.FC<{ members: TripMember[]; lang: string; t: any }> = ({ members, lang, t }) => {
   const [activeTab, setActiveTab] = useState<'Packing' | 'Shopping'>('Packing');
   const [items, setItems] = useState<PlanningItem[]>(() => {
     const saved = localStorage.getItem('planning_items');

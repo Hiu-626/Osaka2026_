@@ -14,10 +14,13 @@ import {
   Check
 } from 'lucide-react';
 
+// Fix: Add lang and t props to Journal component signature to satisfy App.tsx type requirements
 const Journal: React.FC<{ 
   currentUser: TripMember; 
   members: TripMember[];
-}> = ({ currentUser, members }) => {
+  lang: string;
+  t: any;
+}> = ({ currentUser, members, lang, t }) => {
   const [posts, setPosts] = useState<JournalPost[]>(() => {
     const saved = localStorage.getItem('journal_posts');
     return saved ? JSON.parse(saved) : [

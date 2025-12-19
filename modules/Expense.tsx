@@ -23,7 +23,8 @@ import {
 } from 'lucide-react';
 import { GoogleGenAI } from "@google/genai";
 
-const Expense: React.FC<{ currentUser: TripMember; members: TripMember[] }> = ({ currentUser, members }) => {
+// Fix: Add lang and t props to Expense component signature to satisfy App.tsx type requirements
+const Expense: React.FC<{ currentUser: TripMember; members: TripMember[]; lang: string; t: any }> = ({ currentUser, members, lang, t }) => {
   const [expenses, setExpenses] = useState<ExpenseType[]>(() => {
     const saved = localStorage.getItem('expenses');
     return saved ? JSON.parse(saved) : [];
